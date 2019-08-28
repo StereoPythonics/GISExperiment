@@ -1,0 +1,27 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+header {
+    padding: 154px 0 100px;
+}
+
+.masthead {
+    background-color: darkred;
+}
+
+@media (min-width: 992px) {
+    header {
+        padding: 156px 0 100px;
+    }
+}
+
+section {
+    padding: 150px 0;
+}
+
+.back-to-top
+{
+    text-align: right;
+}
+
+
