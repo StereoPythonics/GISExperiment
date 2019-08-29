@@ -1,5 +1,68 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<div id="sample" style="width:80vw; height:80vh;"></div>
+
+<div id="search">
+
+    <script>
+        var object;
+        var markers =[];
+
+        function addMarker(location,iwindow) {
+            var marker = new google.maps.Marker({
+              position: location,
+              map: map
+            });
+            marker.addListener('click', function () {
+                iwindow.open(map, marker);
+            });
+            markers.push(marker);
+        }
+
+        function updateMap() {
+            var a = document.getElementById('textinput').value;
+            fetch('https://nominatim.openstreetmap.org/search?q=' + a + '&format=json')
+            .then(response => {
+             return response.json()
+             })
+                .then(data => {
+                    object = data;
+                    var firstHit = object[0];
+                    if (firstHit == null) return;
+                    for (var i = 0; i < markers.length; i++) {
+                        markers[i].setMap(null);
+                    }
+                    markers = [];
+
+                    var bb = firstHit.boundingbox;
+                    map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(bb[0], bb[2]), new google.maps.LatLng(bb[1], bb[3])))
+                    var infowindow = new google.maps.InfoWindow({
+                        content: firstHit.display_name
+                    });
+                    addMarker(new google.maps.LatLng(firstHit.lat, firstHit.lon), infowindow);
+
+
+                    $.ajax({
+                        url: '@Url.Action("Log", "Home")',
+                        type: 'GET',
+                        dataType: 'json',
+                        // we set cache: false because GET requests are often cached by browsers
+                        // IE is particularly aggressive in that respect
+                        cache: false,
+                        data: { search: a, firstHit: JSON.stringify(firstHit) },
+                        success: function() {
+                            Alert("Submission successful");
+                        }
+                    });
+            })
+            
+        }
+    </script>
+    <input type="text" class="textinput" id="textinput" name="q" value="Search"/><button onclick="updateMap()" >Find and submit</button>
+    
+    <div class="tfclear"></div>
+</div>
+<div id="googlemap"></div>
+
+
 
